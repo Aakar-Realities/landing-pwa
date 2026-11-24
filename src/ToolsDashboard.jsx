@@ -1,4 +1,5 @@
 import { useState, useId } from "react";
+import InstallButton from "./InstallButton.jsx";
 import {
   BellRing,
   Building2,
@@ -377,6 +378,7 @@ function App() {
             <span className="brand-tagline">Corporate Workspace</span>
           </div>
         </a>
+        <InstallButton />
       </header>
 
       <section className="dashboard-content" id="home">

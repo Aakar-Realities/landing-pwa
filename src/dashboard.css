@@ -98,9 +98,61 @@ input:focus-visible {
   min-height: 90px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
+  gap: 16px;
   padding: 18px 0;
   border-bottom: 2px solid var(--divider-line);
+}
+
+/* PWA install button */
+.install-wrap {
+  position: relative;
+}
+
+.install-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font: 600 16px var(--font-body);
+  color: var(--blue-text);
+  background: var(--blue-surface);
+  border: 1.5px solid var(--blue-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 200ms var(--ease-apple-smooth),
+    transform 200ms var(--ease-apple-spring);
+}
+
+.install-btn:hover {
+  background: #e3f1f8;
+  transform: translateY(-1px);
+}
+
+.install-btn:focus-visible {
+  outline: 3px solid var(--blue-primary);
+  outline-offset: 2px;
+}
+
+.install-hint {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 10;
+  width: max-content;
+  max-width: 260px;
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 15px;
+  color: var(--ink-body);
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.install-hint svg {
+  vertical-align: -2px;
 }
 
 .animate-header {
