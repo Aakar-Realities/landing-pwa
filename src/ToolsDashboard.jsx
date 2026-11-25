@@ -61,7 +61,7 @@ const tools = [
   {
     name: "Research Tool",
     description: "Access construction market intelligence, commodity rates, and regulatory insights.",
-    url: "https://researchdashboard.ai.studio",
+    url: "https://research-tool.ai.studio",
     icon: FileSearch,
     visual: "research",
     tag: "Market Intel",
