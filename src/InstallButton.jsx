@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { Download, Share } from "lucide-react";
-
-const isStandalone = () =>
-  window.matchMedia("(display-mode: standalone)").matches ||
-  window.navigator.standalone === true;
-
-const isIOS = () =>
-  /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+import { isIOS, isStandalone } from "./push.js";
 
 export default function InstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);

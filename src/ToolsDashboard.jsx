@@ -1,5 +1,9 @@
 import { useState, useId } from "react";
 import InstallButton from "./InstallButton.jsx";
+import LoginPage from "./LoginPage.jsx";
+import NotificationButton from "./NotificationButton.jsx";
+import { canSeeTool, getSessionUser, signOut } from "./auth.js";
+import { openTaskAppSignedIn, TASK_APP_URL } from "./taskApi.js";
 import {
   BellRing,
   Building2,
@@ -10,6 +14,7 @@ import {
   Clock,
   FileCheck2,
   FileSearch,
+  LogOut,
   NotebookPen,
   Search,
   UsersRound,
@@ -37,7 +42,9 @@ const tools = [
   {
     name: "Task Management",
     description: "Organize project milestones, site inspections, and contractor progress.",
-    url: "https://aakar-task.ai.studio",
+    url: TASK_APP_URL,
+    // Opens already signed in with the PWA account.
+    signedIn: true,
     icon: ClipboardCheck,
     visual: "tasks",
     tag: "Site Projects",
@@ -100,8 +107,16 @@ const tools = [
   },
 ];
 
-function ToolCard({ tool, index }) {
+function ToolCard({ tool, index, user }) {
   const Icon = tool.icon;
+
+  const onClick = (e) => {
+    // Plain left click only; modified clicks keep normal link behaviour.
+    if (!tool.signedIn || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
+      return;
+    }
+    if (openTaskAppSignedIn(user.email)) e.preventDefault();
+  };
 
   return (
     <a
@@ -109,6 +124,7 @@ function ToolCard({ tool, index }) {
       href={tool.url}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={onClick}
       aria-label={`Open ${tool.name} in a new tab: ${tool.description}`}
       style={{ "--card-index": index }}
     >
@@ -349,10 +365,28 @@ function ToolCard({ tool, index }) {
 }
 
 function App() {
+  const [user, setUser] = useState(getSessionUser);
+
+  if (!user) return <LoginPage onSignIn={setUser} />;
+
+  return (
+    <Dashboard
+      user={user}
+      onSignOut={async () => {
+        await signOut();
+        setUser(null);
+      }}
+    />
+  );
+}
+
+function Dashboard({ user, onSignOut }) {
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputId = useId();
 
-  const filteredTools = tools.filter((tool) => {
+  const visibleTools = tools.filter((tool) => canSeeTool(user, tool));
+
+  const filteredTools = visibleTools.filter((tool) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase().trim();
     return (
@@ -378,7 +412,17 @@ function App() {
             <span className="brand-tagline">Corporate Workspace</span>
           </div>
         </a>
-        <InstallButton />
+        <div className="header-actions">
+          <InstallButton />
+          <NotificationButton user={user} />
+          <span className="header-user" title={user.email}>
+            {user.email}
+          </span>
+          <button type="button" className="signout-btn" onClick={onSignOut}>
+            <LogOut size={18} aria-hidden="true" />
+            Sign out
+          </button>
+        </div>
       </header>
 
       <section className="dashboard-content" id="home">
@@ -457,13 +501,13 @@ function App() {
                 className="reset-search-btn"
                 onClick={() => setSearchQuery("")}
               >
-                Show all {tools.length} tools
+                Show all {visibleTools.length} tools
               </button>
             </div>
           ) : (
             <div className="tools-grid">
               {filteredTools.map((tool, index) => (
-                <ToolCard key={tool.name} tool={tool} index={index} />
+                <ToolCard key={tool.name} tool={tool} index={index} user={user} />
               ))}
             </div>
           )}
